@@ -32,7 +32,7 @@ class ProductController {
   async createProduct(req, res) {
     try {
       const { name, description, price, category, pictureURL, amountInStore, feature } = req.body;
-console.log('hihi')
+
       if (!name || !price || !category || !pictureURL) {
         return errorResponse(res, 'Missing required fields: name, price, category, and pictureURL are required', 400);
       }

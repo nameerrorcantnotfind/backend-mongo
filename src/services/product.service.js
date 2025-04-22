@@ -38,7 +38,7 @@ const createProduct = async (productData) => {
       amountInStore: productData.amountInStore || 0,
       feature: productData.feature || []
     });
-console.log(newProduct)
+
     await newProduct.save();
     return newProduct;
   } catch (error) {
