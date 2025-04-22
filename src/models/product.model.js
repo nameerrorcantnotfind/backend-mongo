@@ -28,12 +28,10 @@ const productSchema = new mongoose.Schema({
     ref: 'Category',
     required: true
   },
-  // Thêm tham chiếu đến các đơn hàng chứa sản phẩm này
   orderItems: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'OrderItem'
   }],
-  // Thêm tham chiếu đến giỏ hàng chứa sản phẩm này
   cartItems: [{
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Cart'

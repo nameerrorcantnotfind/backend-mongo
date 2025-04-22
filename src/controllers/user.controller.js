@@ -38,7 +38,7 @@ class UserController {
   async getProfile(req, res) {
     try {
       const userId = req.user.id; // Lấy ID người dùng từ token
-console.log("user id", userId)
+
       // Lấy thông tin người dùng từ database
       const user = await getUserById(userId);
 

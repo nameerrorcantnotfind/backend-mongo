@@ -3,13 +3,14 @@ const userController = require('../controllers/user.controller.js');
 const { authenticate } = require('../middleware/auth.middleware.js');
 const router = express.Router();
 
-const PREFIX = 'user';
-router.get(`/${PREFIX}/profile`, authenticate, userController.getProfile);
-router.put(`/${PREFIX}/profile`, authenticate, userController.updateProfile);
-router.put(`/${PREFIX}/change-password`, authenticate, userController.changePassword);
+//trước khi đi vào routes thì sẽ kiểm tra authenticate tại đây rồi mới đi vào routes
+router.use(authenticate);
 
-router.get(`/${PREFIX}/:email`, authenticate, userController.getByEmail);
-router.post(`/${PREFIX}`, authenticate, userController.create);
+router.get(`/user/profile`, userController.getProfile);
+router.put(`/user/profile`, userController.updateProfile);
+router.put(`/user/change-password`, userController.changePassword);
+router.get(`/user/:email`, userController.getByEmail);
+router.post(`/user`, userController.create);
 
 
 module.exports = router;

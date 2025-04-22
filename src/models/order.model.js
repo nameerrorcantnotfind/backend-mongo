@@ -1,6 +1,5 @@
 const mongoose = require("mongoose");
 
-// Mô hình Order chính đơn giản hóa
 const orderSchema = new mongoose.Schema(
   {
     user: {
