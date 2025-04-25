@@ -1,4 +1,4 @@
-const { getUserByEmail, updateUser, getUserById, changePassword } = require("../services/user.service");
+const { getUserByEmail, updateUser, getUserById, changePassword, createUser } = require("../services/user.service");
 const { successResponse, errorResponse } = require("../utils/response");
 
 class UserController {

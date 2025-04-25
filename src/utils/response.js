@@ -5,7 +5,7 @@ const successResponse = (res, data, message = 'Success', statusCode = 200) => {
       data
     });
   };
-  
+
   const errorResponse = (res, message = 'Error', statusCode = 500, error = null) => {
     return res.status(statusCode).json({
       success: false,
@@ -13,17 +13,8 @@ const successResponse = (res, data, message = 'Success', statusCode = 200) => {
       error: error?.message || error
     });
   };
-  
-  const validationError = (res, errors) => {
-    return res.status(400).json({
-      success: false,
-      message: 'Validation Error',
-      errors
-    });
-  };
-  
+
   module.exports = {
     successResponse,
-    errorResponse,
-    validationError
+    errorResponse
   };
