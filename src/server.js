@@ -1,30 +1,36 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const connectDB = require('./config/db');
+//====Cấu Hình Load File ENV=======//
+const dotenv = require('dotenv'); //
+dotenv.config();//===============//
+//==============================//
 
-// Load environment variables
-dotenv.config();
+//=======express-chuyển Json thành JS===================================================//
+const express = require('express'); // import thư viện Express=========================//
+const app = express(); // tạo một ứng dụng Express====================================//
+app.use(express.json()); //biên dịch json trong req.body thành đối tượng JavaScript==//
+//==================================================================================//
 
-// Initialize express app
-const app = express();
-const port = process.env.PORT || 3001;
+//============cors: cho phép các request từ các domain khác truy cập API của bạn===============//
+const cors = require('cors'); // cho phép các request từ các domain khác truy cập API của bạn //
+app.use(cors({ origin: '*' })); //cho phép các domain khác truy cập API của bạn==============//
+///=========================================================================================//
 
-// Middleware
-app.use(express.json());
-app.use(cors({ origin: '*' }));
+//==========Kết Nối MongoDB================//
+const connectDB = require('./config/db'); //
+connectDB();//Gọi Function Kết Nối Mongo //
+//======================================//
 
-// Routes
-app.use('/api/v1/', require('./routes/auth.routes.js'));
-app.use('/api/v1/', require('./routes/product.routes.js'));
-app.use('/api/v1/', require('./routes/category.routes.js'));
-app.use('/api/v1/', require('./routes/order.routes.js'));
-app.use('/api/v1/', require('./routes/cart.routes.js'));
-app.use('/api/v1/', require('./routes/user.routes.js'));
+//======================API-Routes-==================================//
+app.use('/api/v1/', require('./routes/auth.routes.js'));//==========//
+app.use('/api/v1/', require('./routes/product.routes.js'));//======//
+app.use('/api/v1/', require('./routes/category.routes.js'));//====//
+app.use('/api/v1/', require('./routes/order.routes.js'));//======//
+app.use('/api/v1/', require('./routes/cart.routes.js'));//======//
+app.use('/api/v1/', require('./routes/user.routes.js'));//=====//
+//======================API-Routes-===========================//
 
 
-// Connect to MongoDB and start server
-connectDB();
-app.listen(port, () => {
-  console.log(`[server]: Server is running at http://localhost:${port}`);
+
+
+app.listen(process.env.PORT, () => {
+  console.log(`[server]: Server is running at http://localhost:${process.env.PORT}`);
 });
