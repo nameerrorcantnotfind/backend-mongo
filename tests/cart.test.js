@@ -36,7 +36,7 @@ const mockUserId = new mongoose.Types.ObjectId();
 
 // Mock authentication middleware
 jest.mock('../src/middleware/auth.middleware', () => ({
-  authenticate: (req, res, next) => {
+  authenticate: (req, _res, next) => {
     req.user = { id: mockUserId.toString(), email: 'user@example.com', isAdmin: false };
     next();
   }
@@ -63,7 +63,6 @@ beforeEach(async () => {
 
 describe('Cart API', () => {
   let testProduct;
-  let testUser;
 
   beforeEach(async () => {
     // Create a test user
@@ -108,8 +107,6 @@ describe('Cart API', () => {
     const cart = await Cart.findOne({ userId: mockUserId, productId: testProduct._id });
     expect(cart).toBeTruthy();
     expect(cart.quantity).toBe(2);
-
-
   });
 
   // Test case CART-002: Get user's cart
@@ -210,7 +207,5 @@ describe('Cart API', () => {
     // Verify cart item was removed from the database
     const deletedCart = await Cart.findOne({ userId: mockUserId, productId: testProduct._id });
     expect(deletedCart).toBeNull();
-
-
   });
 });

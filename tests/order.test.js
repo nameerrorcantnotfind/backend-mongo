@@ -38,7 +38,7 @@ const mockAdminId = new mongoose.Types.ObjectId();
 
 // Mock authentication middleware
 jest.mock('../src/middleware/auth.middleware', () => ({
-  authenticate: (req, res, next) => {
+  authenticate: (req, _res, next) => {
     // Default to regular user
     req.user = { id: mockUserId.toString(), email: 'user@example.com', isAdmin: false };
 
@@ -72,8 +72,6 @@ beforeEach(async () => {
 
 describe('Order API', () => {
   let testProduct;
-  let testUser;
-  let adminUser;
 
   beforeEach(async () => {
     // Create a regular user
@@ -128,8 +126,6 @@ describe('Order API', () => {
     expect(order).toBeTruthy();
     expect(order.items.length).toBe(1);
     expect(order.status).toBe('pending');
-
-
   });
 
   // Test case ORDER-002: Get user's orders
@@ -203,7 +199,6 @@ describe('Order API', () => {
 
     expect(response.status).toBe(200);
     expect(response.body.success).toBe(true);
-
 
     // Verify order status was updated in the database
     const updatedOrder = await Order.findById(order._id);

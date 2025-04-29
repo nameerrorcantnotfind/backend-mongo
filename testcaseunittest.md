@@ -1,29 +1,455 @@
 # Unit Test Cases for Backend MongoDB Express API
 
-| Test Case Id | Description | Input | Expected Result | Actual Outcome | Pass/Fail |
-|-------------|-------------|-------|-----------------|----------------|-----------|
-| AUTH-001 | Register a new user with valid data | `POST /api/v1/auth/register` with body: `{ "email": "test@example.com", "password": "password123", "name": "Test User" }` | Status 200, token returned in response | Status 200, token returned in response | Pass |
-| AUTH-002 | Login with valid credentials | `POST /api/v1/auth/login` with body: `{ "email": "test@example.com", "password": "password123" }` | Status 200, user object and token returned | Status 200, user object and token returned | Pass |
-| AUTH-003 | Register with existing email | `POST /api/v1/auth/register` with body: `{ "email": "test@example.com", "password": "password123", "name": "Test User" }` | Status 500, error message "User already exists" | Status 500, error message "User already exists" | Pass |
-| AUTH-004 | Login with invalid credentials | `POST /api/v1/auth/login` with body: `{ "email": "test@example.com", "password": "wrongpassword" }` | Status 500, error message "Invalid credentials" | Status 500, error message "Invalid credentials" | Pass |
-| PROD-001 | Get all products | `GET /api/v1/products` | Status 200, array of products | Status 200, array of products | Pass |
-| PROD-002 | Get product by ID | `GET /api/v1/products/:id` with valid product ID | Status 200, product object | Status 200, product object | Pass |
-| PROD-003 | Create new product with valid data | `POST /api/v1/products` with valid token and body: `{ "name": "Test Product", "price": 99.99, "category": "validCategoryId", "pictureURL": "http://example.com/image.jpg", "amountInStore": 10 }` | Status 201, created product returned | Status 201, created product returned | Pass |
-| PROD-004 | Create product with missing required fields | `POST /api/v1/products` with valid token and body: `{ "name": "Test Product" }` | Status 400, error message about missing fields | Status 400, error message about missing fields | Pass |
-| PROD-005 | Update product with valid data | `PUT /api/v1/products/:id` with valid token and body: `{ "price": 89.99 }` | Status 200, updated product returned | Status 200, updated product returned | Pass |
-| PROD-006 | Delete product | `DELETE /api/v1/products/:id` with valid token | Status 200, deleted product returned | Status 200, deleted product returned | Pass |
-| CAT-001 | Get all categories | `GET /api/v1/category` | Status 200, array of categories | Status 200, array of categories | Pass |
-| CAT-002 | Get category by ID | `GET /api/v1/category/:id` with valid category ID | Status 200, category object | Status 200, category object | Pass |
-| CAT-003 | Create new category with valid data | `POST /api/v1/category` with valid token and body: `{ "name": "Test Category" }` | Status 201, created category returned | Status 201, created category returned | Pass |
-| CAT-004 | Create category with missing name | `POST /api/v1/category` with valid token and body: `{}` | Status 400, error message "Name is required" | Status 400, error message "Name is required" | Pass |
-| CART-001 | Add item to cart | `POST /api/v1/cart` with valid token and body: `{ "productId": "validProductId", "quantity": 2 }` | Status 200, updated cart returned | Status 200, message "Product added to cart successfully" | Pass |
-| CART-002 | Get user's cart | `GET /api/v1/cart` with valid token | Status 200, cart items returned | Status 200, message "Cart fetched successfully" | Pass |
-| CART-003 | Update cart item quantity | `PUT /api/v1/cart` with valid token and body: `{ "productId": "validProductId", "quantity": 3 }` | Status 200, updated cart returned | Status 200, message "Cart updated successfully" | Pass |
-| CART-004 | Remove item from cart | `DELETE /api/v1/cart` with valid token and body: `{ "productId": "validProductId" }` | Status 200, updated cart returned | Status 200, message "Product removed from cart successfully" | Pass |
-| ORDER-001 | Create new order | `POST /api/v1/orders` with valid token and items in cart | Status 201, created order returned | Status 201, created order returned | Pass |
-| ORDER-002 | Get user's orders | `GET /api/v1/orders` with valid token | Status 200, array of orders | Status 200, array of orders | Pass |
-| ORDER-003 | Get order by ID | `GET /api/v1/orders/:id` with valid token and order ID | Status 200, order object | Status 200, order object | Pass |
-| ORDER-004 | Update order status (admin only) | `PUT /api/v1/orders/:id/status` with admin token and body: `{ "status": "processing" }` | Status 200, updated order returned | Status 200, updated order returned | Pass |
-| USER-001 | Get user profile | `GET /api/v1/user/profile` with valid token | Status 200, user profile returned | Status 200, user profile returned | Pass |
-| USER-002 | Update user profile | `PUT /api/v1/user/profile` with valid token and body: `{ "name": "Updated Name", "phone": "1234567890" }` | Status 200, updated user profile returned | Status 200, updated user profile returned | Pass |
-| USER-003 | Change password | `PUT /api/v1/user/change-password` with valid token and body: `{ "currentPassword": "password123", "newPassword": "newpassword123" }` | Status 200, success message | Status 200, success message | Pass |
+| Test Case Id | Description | Input | Expected Result | Actual Outcome | Pass/Fail | Duration |
+|-------------|-------------|-------|-----------------|----------------|-----------|----------|
+| AUTH-001 | Register a new user with valid data | ```javascript
+const response = await request(app)
+  .post('/api/v1/auth/register')
+  .send({
+    email: "test@example.com",
+    password: "password123",
+    name: "Test User"
+  });
+``` | Status 200, token returned in response | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Register successfully",
+    data: "mock-token"
+  }
+}
+``` | Pass | 134ms |
+| AUTH-002 | Login with valid credentials | ```javascript
+const response = await request(app)
+  .post('/api/v1/auth/login')
+  .send({
+    email: "test@example.com",
+    password: "password123"
+  });
+``` | Status 200, user object and token returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Login successfully",
+    data: {
+      user: {
+        _id: "user-id",
+        name: "Test User",
+        email: "test@example.com",
+        // other user fields
+      },
+      token: "mock-token"
+    }
+  }
+}
+``` | Pass | 121ms |
+| AUTH-003 | Register with existing email | ```javascript
+const response = await request(app)
+  .post('/api/v1/auth/register')
+  .send({
+    email: "test@example.com",
+    password: "password123",
+    name: "Test User"
+  });
+``` | Status 500, error message "User already exists" | ```javascript
+{
+  status: 500,
+  body: {
+    success: false,
+    error: "User already exists"
+  }
+}
+``` | Pass | 51ms |
+| AUTH-004 | Login with invalid credentials | ```javascript
+const response = await request(app)
+  .post('/api/v1/auth/login')
+  .send({
+    email: "test@example.com",
+    password: "wrongpassword"
+  });
+``` | Status 500, error message "Invalid credentials" | ```javascript
+{
+  status: 500,
+  body: {
+    success: false,
+    error: "Invalid credentials"
+  }
+}
+``` | Pass | 124ms |
+| PROD-001 | Get all products | ```javascript
+const response = await request(app)
+  .get('/api/v1/products');
+``` | Status 200, array of products | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: [
+      // Array of product objects
+      {
+        _id: "product-id",
+        name: "Product 1",
+        price: 99.99,
+        // other product fields
+      },
+      // more products
+    ]
+  }
+}
+``` | Pass | 99ms |
+| PROD-002 | Get product by ID | ```javascript
+const response = await request(app)
+  .get(`/api/v1/products/${productId}`);
+``` | Status 200, product object | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      _id: "product-id",
+      name: "Test Product",
+      price: 99.99,
+      // other product fields
+    }
+  }
+}
+``` | Pass | 35ms |
+| PROD-003 | Create new product with valid data | ```javascript
+const response = await request(app)
+  .post('/api/v1/products')
+  .send({
+    name: "New Product",
+    price: 99.99,
+    category: categoryId,
+    pictureURL: "http://example.com/image.jpg",
+    amountInStore: 10
+  });
+``` | Status 201, created product returned | ```javascript
+{
+  status: 201,
+  body: {
+    success: true,
+    message: "Product created successfully",
+    data: {
+      _id: "new-product-id",
+      name: "New Product",
+      price: 99.99,
+      // other product fields
+    }
+  }
+}
+``` | Pass | 45ms |
+| PROD-004 | Create product with missing required fields | ```javascript
+const response = await request(app)
+  .post('/api/v1/products')
+  .send({
+    name: "Incomplete Product"
+    // Missing required fields
+  });
+``` | Status 400, error message about missing fields | ```javascript
+{
+  status: 400,
+  body: {
+    success: false,
+    message: "Missing required fields"
+  }
+}
+``` | Pass | 38ms |
+| PROD-005 | Update product with valid data | ```javascript
+const response = await request(app)
+  .put(`/api/v1/products/${productId}`)
+  .send({
+    price: 89.99,
+    description: "Updated description"
+  });
+``` | Status 200, updated product returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Product updated successfully",
+    data: {
+      _id: "product-id",
+      name: "Test Product",
+      price: 89.99,
+      description: "Updated description",
+      // other product fields
+    }
+  }
+}
+``` | Pass | 40ms |
+| PROD-006 | Delete product | ```javascript
+const response = await request(app)
+  .delete(`/api/v1/products/${productId}`);
+``` | Status 200, deleted product returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Product deleted successfully",
+    data: {
+      _id: "product-id",
+      name: "Test Product",
+      // other product fields
+    }
+  }
+}
+``` | Pass | 36ms |
+| CAT-001 | Get all categories | ```javascript
+const response = await request(app)
+  .get('/api/v1/category');
+``` | Status 200, array of categories | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: [
+      // Array of category objects
+      {
+        _id: "category-id",
+        name: "Category 1"
+      },
+      // more categories
+    ]
+  }
+}
+``` | Pass | 30ms |
+| CAT-002 | Get category by ID | ```javascript
+const response = await request(app)
+  .get(`/api/v1/category/${categoryId}`);
+``` | Status 200, category object | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      _id: "category-id",
+      name: "Test Category"
+    }
+  }
+}
+``` | Pass | 28ms |
+| CAT-003 | Create new category with valid data | ```javascript
+const response = await request(app)
+  .post('/api/v1/category')
+  .send({
+    name: "New Category"
+  });
+``` | Status 201, created category returned | ```javascript
+{
+  status: 201,
+  body: {
+    success: true,
+    message: "Category created successfully",
+    data: {
+      _id: "new-category-id",
+      name: "New Category"
+    }
+  }
+}
+``` | Pass | 32ms |
+| CAT-004 | Create category with missing name | ```javascript
+const response = await request(app)
+  .post('/api/v1/category')
+  .send({});
+``` | Status 400, error message "Name is required" | ```javascript
+{
+  status: 400,
+  body: {
+    success: false,
+    error: "Name is required"
+  }
+}
+``` | Pass | 25ms |
+| CART-001 | Add item to cart | ```javascript
+const response = await request(app)
+  .post('/api/v1/cart')
+  .send({
+    productId: productId,
+    quantity: 2
+  });
+``` | Status 200, updated cart returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      message: "Product added to cart successfully"
+    }
+  }
+}
+``` | Pass | 55ms |
+| CART-002 | Get user's cart | ```javascript
+const response = await request(app)
+  .get('/api/v1/cart');
+``` | Status 200, cart items returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      message: "Cart fetched successfully",
+      items: [
+        // Array of cart items
+      ]
+    }
+  }
+}
+``` | Pass | 48ms |
+| CART-003 | Update cart item quantity | ```javascript
+const response = await request(app)
+  .put('/api/v1/cart')
+  .send({
+    productId: productId,
+    quantity: 3
+  });
+``` | Status 200, updated cart returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      message: "Cart updated successfully"
+    }
+  }
+}
+``` | Pass | 52ms |
+| CART-004 | Remove item from cart | ```javascript
+const response = await request(app)
+  .delete('/api/v1/cart')
+  .send({
+    productId: productId
+  });
+``` | Status 200, updated cart returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      message: "Product removed from cart successfully"
+    }
+  }
+}
+``` | Pass | 50ms |
+| ORDER-001 | Create new order | ```javascript
+// First add items to cart
+await Cart.create({
+  userId: userId,
+  productId: productId,
+  quantity: 2
+});
+
+const response = await request(app)
+  .post('/api/v1/orders')
+  .send({});
+``` | Status 201, created order returned | ```javascript
+{
+  status: 201,
+  body: {
+    success: true,
+    // Order data
+  }
+}
+``` | Pass | 75ms |
+| ORDER-002 | Get user's orders | ```javascript
+const response = await request(app)
+  .get('/api/v1/orders');
+``` | Status 200, array of orders | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: [
+      // Array of order objects
+    ]
+  }
+}
+``` | Pass | 45ms |
+| ORDER-003 | Get order by ID | ```javascript
+const response = await request(app)
+  .get(`/api/v1/orders/${orderId}`);
+``` | Status 200, order object | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      _id: "order-id",
+      // Order details
+    }
+  }
+}
+``` | Pass | 40ms |
+| ORDER-004 | Update order status (admin only) | ```javascript
+const response = await request(app)
+  .put(`/api/v1/orders/${orderId}/status`)
+  .send({
+    status: "processing"
+  });
+``` | Status 200, updated order returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    // Updated order data
+  }
+}
+``` | Pass | 38ms |
+| USER-001 | Get user profile | ```javascript
+const response = await request(app)
+  .get('/api/v1/user/profile');
+``` | Status 200, user profile returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      _id: "user-id",
+      name: "Test User",
+      email: "user@example.com",
+      // Other user fields excluding password
+    }
+  }
+}
+``` | Pass | 35ms |
+| USER-002 | Update user profile | ```javascript
+const response = await request(app)
+  .put('/api/v1/user/profile')
+  .send({
+    name: "Updated Name",
+    phone: "1234567890",
+    address: "456 New St"
+  });
+``` | Status 200, updated user profile returned | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    data: {
+      _id: "user-id",
+      name: "Updated Name",
+      phone: "1234567890",
+      address: "456 New St",
+      // Other user fields
+    }
+  }
+}
+``` | Pass | 42ms |
+| USER-003 | Change password | ```javascript
+const response = await request(app)
+  .put('/api/v1/user/change-password')
+  .send({
+    currentPassword: "password123",
+    newPassword: "newpassword123"
+  });
+``` | Status 200, success message | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Password changed successfully"
+  }
+}
+``` | Pass | 120ms |

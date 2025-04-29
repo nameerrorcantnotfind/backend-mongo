@@ -8,5 +8,17 @@ module.exports = {
   ],
   coverageDirectory: 'coverage',
   verbose: true,
-  testTimeout: 30000
+  testTimeout: 30000,
+  reporters: [
+    'default',
+    [
+      'jest-html-reporter',
+      {
+        pageTitle: 'Unit Test Report',
+        outputPath: './test-report.html',
+        includeFailureMsg: true,
+        includeConsoleLog: true
+      }
+    ]
+  ],
 };
