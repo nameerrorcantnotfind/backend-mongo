@@ -453,3 +453,59 @@ const response = await request(app)
   }
 }
 ``` | Pass | 120ms |
+| STATS-001 | Get all statistics | ```javascript
+const response = await request(app)
+  .get('/api/v1/stats');
+``` | Status 200, statistics of all data | ```javascript
+{
+  status: 200,
+  body: {
+    success: true,
+    message: "Statistics fetched successfully",
+    data: {
+      counts: {
+        users: 2,
+        products: 3,
+        categories: 2,
+        orders: 2
+      },
+      data: {
+        users: [...],
+        products: [...],
+        categories: [...],
+        orders: [...]
+      },
+      analytics: {
+        totalRevenue: 2559.96,
+        productsByCategory: {
+          "Electronics": 2,
+          "Clothing": 1
+        },
+        ordersByStatus: {
+          "completed": 1,
+          "pending": 1
+        }
+      }
+    }
+  }
+}
+``` | Pass | 140ms |
+| STATS-002 | Non-admin access denied | ```javascript
+// Override the mock to simulate a non-admin user
+const authMiddleware = require('../src/middleware/auth.middleware');
+authMiddleware.authenticate.mockImplementationOnce((req, res, next) => {
+  req.user = { id: mockUserId.toString(), email: 'user@example.com', isAdmin: false };
+  next();
+});
+
+const response = await request(app)
+  .get('/api/v1/stats');
+``` | Status 403, access denied message | ```javascript
+{
+  status: 403,
+  body: {
+    success: false,
+    message: "Access denied. Admin only."
+  }
+}
+``` | Pass | 10ms |

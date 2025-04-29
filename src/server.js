@@ -26,6 +26,7 @@ app.use('/api/v1/', require('./routes/category.routes.js'));//====//
 app.use('/api/v1/', require('./routes/order.routes.js'));//======//
 app.use('/api/v1/', require('./routes/cart.routes.js'));//======//
 app.use('/api/v1/', require('./routes/user.routes.js'));//=====//
+app.use('/api/v1/', require('./routes/dashboard.routes.js'));//=====//
 //======================API-Routes-===========================//
 
 
